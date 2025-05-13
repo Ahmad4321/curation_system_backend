@@ -1,2 +1,7 @@
 curation_system_trait
 curation_system_frontend--
+*.pyc
+
+*.log
+*.db
+*.egg-info

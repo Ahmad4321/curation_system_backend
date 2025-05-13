@@ -2,18 +2,19 @@ from django.db import models
 
 from django.contrib.auth.models import User  # default auth_user table
 
-class RTOdata(models.Model):
-    TAG = models.TextField()
-    LEVEL = models.TextField(db_column='"LEVEL"')  # Avoid keyword conflict
-    CNAME = models.TextField()
-    ENAME = models.TextField()
-    TOID = models.TextField()
-    PARENTID = models.IntegerField(null=True, blank=True)
+class rtoData(models.Model):
+    id = models.AutoField(primary_key=True)
+    tag = models.TextField(db_column='tag')
+    level = models.TextField(db_column='level')  # Avoid keyword conflict
+    cname = models.TextField(db_column='cname')
+    ename = models.TextField(db_column='ename')
+    toid = models.TextField(db_column='toid')
+    parent_id = models.IntegerField(null=True, blank=True)
 
     # Additional evidence fields
     pubAnnotation_evidence = models.TextField(null=True, blank=True)
     llm_evidence = models.TextField(null=True, blank=True)
-    rice_alterome_evidence = models.IntegerField(null=True, blank=True)
+    rice_alterome_evidence = models.TextField(null=True, blank=True)
 
     # Audit fields (linked to auth_user)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -28,12 +29,13 @@ class RTOdata(models.Model):
     )
 
     class Meta:
-        db_table = 'RTOdata'
+        db_table = 'rto_data'
 
 class TraitEvaluation(models.Model):
-    evaluation = models.TextField()
-    trait = models.ForeignKey(
-        RTOdata, on_delete=models.CASCADE,
+    id = models.AutoField(primary_key=True)
+    evaluation = models.TextField(max_length=255)
+    trait_id = models.ForeignKey(
+        rtoData, on_delete=models.CASCADE,
         db_column='trait_id', related_name='trait_evaluations'
     )
     expert_name = models.TextField(null=True, blank=True)
@@ -53,5 +55,11 @@ class TraitEvaluation(models.Model):
     class Meta:
         db_table = 'trait_evaluation'
         indexes = [
-            models.Index(fields=['id', 'trait']),
+            models.Index(fields=['id', 'trait_id']),
         ]
+
+
+class CustomUser(models.Model):
+    pass
+
+AUTH_USER_MODEL = 'users.CustomUser'

@@ -78,9 +78,18 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'trait_curation_system': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'trait_curation_system.db.sqlite3',
     }
 }
 
+DATABASE_ROUTERS = ['curation_system.database_router.DatabaseAppsRouter']
+
+DATABASE_APPS_MAPPING = {
+    'rice_trait_ontology': 'trait_curation_system'
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -117,7 +126,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR,'curation_system_frontend/build/static')]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR,'curation_system_frontend/build/static')]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
