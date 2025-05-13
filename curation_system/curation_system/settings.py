@@ -77,9 +77,14 @@ WSGI_APPLICATION = 'curation_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'NAME': BASE_DIR / 'trait_curation_system.db.sqlite3',
+    },
+    
 }
+# 'RTO_DATA': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'RTO_data.db',
+#     }
 
 
 # Password validation

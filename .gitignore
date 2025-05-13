@@ -1,3 +1,5 @@
 venv
 RTO_data.db
 RiceTraitOntology.db.sqlite3
+trait_curation_system.db.sqlite3
+custom_scripts
