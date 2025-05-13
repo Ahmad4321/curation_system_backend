@@ -77,19 +77,15 @@ WSGI_APPLICATION = 'curation_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    'trait_curation_system': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'trait_curation_system.db.sqlite3',
+        'NAME': BASE_DIR / 'ricetrait.db.sqlite3',
     }
 }
 
-DATABASE_ROUTERS = ['curation_system.database_router.DatabaseAppsRouter']
+# DATABASE_ROUTERS = ['curation_system.database_router.DatabaseAppsRouter']
 
-DATABASE_APPS_MAPPING = {
-    'rice_trait_ontology': 'trait_curation_system'
-}
+# DATABASE_APPS_MAPPING = {
+#     'rice_trait_ontology': 'trait_curation_system',
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

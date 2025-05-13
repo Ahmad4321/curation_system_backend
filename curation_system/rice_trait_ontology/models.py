@@ -2,13 +2,14 @@ from django.db import models
 
 from django.contrib.auth.models import User  # default auth_user table
 
+
 class rtoData(models.Model):
     id = models.AutoField(primary_key=True)
     tag = models.TextField(db_column='tag')
     level = models.TextField(db_column='level')  # Avoid keyword conflict
     cname = models.TextField(db_column='cname')
     ename = models.TextField(db_column='ename')
-    toid = models.TextField(db_column='toid')
+    toid = models.TextField(db_column='toid',max_length=255)
     parent_id = models.IntegerField(null=True, blank=True)
 
     # Additional evidence fields

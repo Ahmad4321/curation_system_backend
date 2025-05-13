@@ -5,23 +5,12 @@ from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-
+from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth.models import User
 # Create your views here.
 
 def index(request):
     return render(request,'index.html')
-
-
-
-@csrf_exempt
-@csrf_protect
-def home_tabs(request):
-    return render(request, "home_tab.html")
-
-@csrf_exempt
-@csrf_protect
-def test(request):
-    return render(request, "test2.html")
 
 
 @csrf_exempt
@@ -147,6 +136,42 @@ def save_evaluation(request):
         return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 
+# Sigup module
+@csrf_exempt
+def signup_view(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        username = data.get("username")
+        password = data.get("password")
+        email = data.get("email")
 
-def login(request):
-    return render(request, "login.html")
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"error": "Username already exists"}, status=400)
+
+        user = User.objects.create_user(username=username, password=password, email=email)
+        return JsonResponse({"message": "User created successfully"})
+
+
+# Sign in module
+@csrf_exempt
+def login_view(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        username = data.get("username")
+        password = data.get("password")
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)  # optional: sets session
+            return JsonResponse({"message": "Login successful"})
+        else:
+            return JsonResponse({"error": "Invalid credentials"}, status=401)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=400)
+@csrf_exempt
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return JsonResponse({'message': 'Logged out successfully'})
+    else:            
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
