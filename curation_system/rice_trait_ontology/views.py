@@ -15,22 +15,11 @@ def index(request):
 
 @csrf_exempt
 def get_data(request):
-    all_data = RTOdata.objects.all().values()
+    all_data = rtoData.objects.all().values()
     data = []
     for line in all_data:
         data.append({'id': int(line['id']), 'tag': line['TAG'], 'level': int(line['LEVEL']), 'name': f"{line['CNAME'] } ({line['ENAME']})",
                     'ename': line['ENAME'], 'TOID': line['TOID'], 'parentId': int(line['PARENTID'])})
-
-    # data = [
-    #     {'id': 1, 'tag': '1', 'level': 1, 'name': '植株性状', 'ename': 'Plant trait', 'TOID': 'TO:0000387',
-    #      'parentId': 0},
-    #     {'id': 2, 'tag': '1.1', 'level': 2, 'name': '受力性状', 'ename': 'Stress trait', 'TOID': 'TO:0000164',
-    #      'parentId': 1},
-    #     {'id': 3, 'tag': '1.1.1', 'level': 3, 'name': '非生物胁迫特性', 'ename': 'Abiotic stress trait',
-    #      'TOID': 'TO:0000168', 'parentId': 2}
-    # ]
-
-    # 构建树状结构
     tree = {}
     for item in data:
         item['children'] = []
@@ -50,14 +39,19 @@ def get_data(request):
 
 @csrf_exempt
 def get_data_json(request):
-    all_data = RTOdata.objects.all().values()
+    rto_list = rtoData.objects.prefetch_related('trait_evaluations').all().values(
+        'id', 'tag', 'level', 'cname', 'ename', 'toid', 'parent_id',
+        'pubAnnotation_evidence', 'llm_evidence', 'rice_alterome_evidence',
+        'created_at', 'updated_at', 'created_by__username', 'updated_by__username','created_by__id', 'updated_by__id'
+    )
     data = []
-    count = 0
-    for line in all_data:
-        val = {}
-        data.append({'id': int(line['id']), 'tag': line['TAG'], 'level': int(line['LEVEL']), 'name': f"{line['CNAME'] } ({line['ENAME']})",
-                    'ename': line['ENAME'], 'TOID': line['TOID'], 'parentId': int(line['PARENTID'])})
-
+    
+    for line in rto_list:
+        data.append({'id': int(line['id']), 'tag': line['tag'], 'level': int(line['level']), 'name': f"{line['cname'] } ({line['ename']})",
+                    'ename': line['ename'], 'toid': line['toid'], 'parentId': int(line['parent_id']),
+                    'pubAnnotation_evidence': line['pubAnnotation_evidence'],'llm_evidence': line['llm_evidence'],
+                    'rice_alterome_evidence': line['rice_alterome_evidence'],'created_at': line['created_at'],'updated_at': line['updated_at'],'evaluations': list(line.pop('trait_evaluations', [])),
+                    'created_by': line['created_by__username'],'updated_by': line['updated_by__username'],'created_by_id': line['created_by__id'],'updated_by_id': line['updated_by__id']})
 
     # 构建树状结构
     tree = {}
@@ -80,56 +74,66 @@ def get_data_json(request):
 
     viewdata = viewdata #{'code': 0, 'message': 'hello', 'count': len(data), 'data': root}
 
-    return JsonResponse(viewdata, safe=False)
+    return JsonResponse(root, safe=False)
 
 
 
 @csrf_exempt
-def get_data_jstree(request):
-    all_data = RTOdata.objects.all().values()
-    data = []
-    count = 0
-    
-    for line in all_data:
-        state = True if int(line['level']) < 3 else False
-        data.append({'id': int(line['id']), 'tag': line['TAG'], 'level': int(line['LEVEL']), 'name': f"{line['CNAME'] } ({line['ENAME']})",
-                    'ename': line['ENAME'], 'TOID': line['TOID'], 'parentId': int(line['PARENTID'])})
+def get_data_distinct(request):
+    distinct_names = list(rtoData.objects.values('ename').distinct())
         
-    # 构建树状结构
-    tree = {}
-    for item in data:
-        item['children'] = []
-        tree[item['id']] = item
-
-    for item in data:
-        parent_id = item['parentId']
-        if parent_id in tree:
-            tree[parent_id]['children'].append(item)
 
     # 获取根节点
-    root = [item for item in tree.values() if item['parentId'] == 0]
+    root = [item['ename'] for item in distinct_names]
 
 
     context = root #{'code': 0, 'message': 'hello', 'count': len(data), 'data': root}
 
-    return JsonResponse(root, safe=False)
+    return JsonResponse(context, safe=False)
 
 
 @csrf_protect
 @csrf_exempt
-def save_evaluation(request):
+def save_actions(request):
     if request.method == "POST":
-        print("Here")
+
+
         body_unicode = request.body.decode('utf-8')
         body_data = json.loads(body_unicode)
-        evaluation = body_data.get('evaluation')
-        id = body_data.get('id')
-        print(evaluation)
 
-        # 在这里进行保存到数据库的逻辑
-        evaluation_obj = RTOdata.objects.get(id=id)
-        evaluation_obj.evaluation = evaluation
+        
+        evaluation_object = body_data.get('evaluation')
+        id = body_data.get('id')
+        # Saving and creating the evaluation against the trait
+        evaluation_obj = trait_evaluation.objects.create(
+            evaluation=evaluation_object.evaluation,
+            trait_id=rtoData.objects.get(id=evaluation_object.id),
+            expert_name=evaluation_object.expert_name,
+            created_by=evaluation_object.created_by,
+            updated_by= evaluation_object.updated_by,
+        )
         evaluation_obj.save()
+
+
+        # Saving the action performed
+        action_object = body_data.get('action_performed')
+        action_performed_obj = ActionPerformed(
+            action_code=action_object.action_code,
+            action_name=action_object.action_name,
+            trait_name=action_object.trait_name,
+            performed_by=action_object.performed_by,
+            is_active=True,
+            is_resolved=True,
+            created_by=action_object.created_by,
+            updated_by=action_object.updated_by,
+            trait_id=rtoData.objects.get(id=action_object.id),
+            trait_reference=action_object.trait_reference,
+            # Assuming you want to set the created_at and updated_at fields automatically
+        )
+        action_performed_obj.save()
+
+
+
 
         return JsonResponse({'success': True})
     else:
@@ -138,7 +142,7 @@ def save_evaluation(request):
 
 # Sigup module
 @csrf_exempt
-def signup_view(request):
+def register_view(request):
     if request.method == "POST":
         data = json.loads(request.body)
         username = data.get("username")
@@ -168,6 +172,8 @@ def login_view(request):
             return JsonResponse({"error": "Invalid credentials"}, status=401)
     else:
         return JsonResponse({"error": "Invalid request method"}, status=400)
+
+# Logoutform
 @csrf_exempt
 def logout_view(request):
     if request.method == 'POST':
