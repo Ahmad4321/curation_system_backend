@@ -39,19 +39,23 @@ def get_data(request):
 
 @csrf_exempt
 def get_data_json(request):
-    rto_list = rtoData.objects.prefetch_related('trait_evaluations').all().values(
-        'id', 'tag', 'level', 'cname', 'ename', 'toid', 'parent_id',
-        'pubAnnotation_evidence', 'llm_evidence', 'rice_alterome_evidence',
-        'created_at', 'updated_at', 'created_by__username', 'updated_by__username','created_by__id', 'updated_by__id'
-    )
+    rto_list = rtoData.objects.all().values('id','tag', 'level', 'cname', 'ename', 'toid', 'parent_id','pubAnnotation_evidence','llm_evidence','rice_alterome_evidence','created_at','updated_at','created_by__username','updated_by__username','created_by__id','updated_by__id')
     data = []
-    
+
     for line in rto_list:
         data.append({'id': int(line['id']), 'tag': line['tag'], 'level': int(line['level']), 'name': f"{line['cname'] } ({line['ename']})",
                     'ename': line['ename'], 'toid': line['toid'], 'parentId': int(line['parent_id']),
                     'pubAnnotation_evidence': line['pubAnnotation_evidence'],'llm_evidence': line['llm_evidence'],
-                    'rice_alterome_evidence': line['rice_alterome_evidence'],'created_at': line['created_at'],'updated_at': line['updated_at'],'evaluations': list(line.pop('trait_evaluations', [])),
+                    'rice_alterome_evidence': line['rice_alterome_evidence'],'created_at': line['created_at'],'updated_at': line['updated_at'],
                     'created_by': line['created_by__username'],'updated_by': line['updated_by__username'],'created_by_id': line['created_by__id'],'updated_by_id': line['updated_by__id']})
+
+    
+    # for line in rto_list:
+    #     data.append({'id': int(line.id), 'tag': line.tag, 'level': int(line.level), 'name': f"{line.cname } ({line.ename})",
+    #                 'ename': line.ename, 'toid': line.toid, 'parentId': int(line.parent_id),
+    #                 'pubAnnotation_evidence': line.pubAnnotation_evidence,'llm_evidence': line.llm_evidence,
+    #                 'rice_alterome_evidence': line.rice_alterome_evidence,'created_at': line.created_at,'updated_at': line.updated_at,
+    #                 'created_by': line.created_by.username,'updated_by': line.updated_by.username,'created_by_id': line.created_by.id,'updated_by_id': line.updated_by.id})
 
     # 构建树状结构
     tree = {}
@@ -77,6 +81,25 @@ def get_data_json(request):
     return JsonResponse(root, safe=False)
 
 
+@csrf_exempt
+def getevaluation_data(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        trait_id = data.get("trait_id")
+        print("Trait ID:", trait_id)
+        all_data = TraitEvaluation.objects.filter(trait_id=trait_id).values('id','evaluation', 'expert_name', 'created_at', 'updated_at', 'created_by_id')
+        data = []
+        for line in all_data:
+            data.append({'id': int(line['id']), 'evaluation': line['evaluation'], 'expert_name': line['expert_name'],
+                        'created_at': line['created_at'], 'updated_at': line['updated_at']})
+        context = {'code': 0, 'message': 'hello', 'count': len(data), 'data': data}
+        return JsonResponse(context, safe=False)
+
+    else:
+        context = {'code': 0, 'message': 'hello', 'count': 0, 'data': []}
+        return JsonResponse(context, safe=False)
+
+    
 
 @csrf_exempt
 def get_data_distinct(request):
@@ -92,50 +115,89 @@ def get_data_distinct(request):
     return JsonResponse(context, safe=False)
 
 
-@csrf_protect
+
+def save_evalutation(comment,expert_name,user,trait_id):
+    exper_name_value =   user.get("username") if user else expert_name
+    user_id =  user.get("id") if user else 1
+
+    rto_instance = rtoData.objects.get(id=trait_id)
+    user = User.objects.get(id=user_id)
+
+    # Saving and creating the evaluation against the trait
+    evaluation_obj = TraitEvaluation.objects.create(
+        evaluation=comment,
+        trait_id= rto_instance,
+        expert_name= exper_name_value,
+        created_by= user,
+        updated_by= user,
+    )
+    evaluation_obj.save()
+    return evaluation_obj
+
+
+def save_action_performed(action_code,action_name,user,trait_reference,is_active,is_resolved):
+    rto_instance = rtoData.objects.get(id=trait_reference.get("id"))
+    user_instance = User.objects.get(id=user.get("id")) if user else User.objects.get(id=1)
+
+    # parsed_trait_reference = json.loads(trait_reference)
+    # trait_reference= parsed_trait_reference
+
+    # Saving and creating the evaluation against the trait
+    action_obj = ActionPerformed.objects.create(
+        action_name=action_name,
+        performed_by= user.get("username"),
+        is_active= is_active,
+        is_resolved= is_resolved,
+        trait_id= rto_instance,
+        trait_reference= trait_reference,
+        created_by=user_instance,
+        updated_by=user_instance
+    )
+    action_obj.save()
+    return action_obj
+
 @csrf_exempt
 def save_actions(request):
     if request.method == "POST":
+        data = json.loads(request.body)
+        comment = data.get("comment")
+        expert_name = data.get("expert_name") 
+        user = data.get("user")
+        trait = data.get("trait")
+        trait_id = trait.get("id")
+        is_active = True
+        is_resolved = True
+        action_code = None
+        action_name = None
+        if data.get("function"):
 
 
-        body_unicode = request.body.decode('utf-8')
-        body_data = json.loads(body_unicode)
+            if data.get("function") == "add":
+                action_code = "1001"
+                action_name = data.get("function")  
+            elif data.get("function") == "merge":
+                action_code = "1002"
+                action_name = data.get("function")
+            elif data.get("function") == "remove":
+                action_code = "1003"
+                action_name = data.get("function")    
+            elif data.get("function") == "remain":
+                action_code = "1004"
+                action_name = data.get("function")
+            
+            if action_code == "1004":
+                is_active = False
+                is_resolved = False
+            
+            save_action = save_action_performed(action_code,action_name,user,trait,is_active,is_resolved)
+            saved_eval = save_evalutation(comment,expert_name,user,trait_id)
 
-        
-        evaluation_object = body_data.get('evaluation')
-        id = body_data.get('id')
-        # Saving and creating the evaluation against the trait
-        evaluation_obj = trait_evaluation.objects.create(
-            evaluation=evaluation_object.evaluation,
-            trait_id=rtoData.objects.get(id=evaluation_object.id),
-            expert_name=evaluation_object.expert_name,
-            created_by=evaluation_object.created_by,
-            updated_by= evaluation_object.updated_by,
-        )
-        evaluation_obj.save()
+            return JsonResponse({'success': True,"evaluation": "saved", 'action_performed':"saved",'msg': "Thank you for your feedback! Your evaluation has been saved successfully. Incase of add/merge/remove, administrator will review your feedback and take action accordingly."})
 
-
-        # Saving the action performed
-        action_object = body_data.get('action_performed')
-        action_performed_obj = ActionPerformed(
-            action_code=action_object.action_code,
-            action_name=action_object.action_name,
-            trait_name=action_object.trait_name,
-            performed_by=action_object.performed_by,
-            is_active=True,
-            is_resolved=True,
-            created_by=action_object.created_by,
-            updated_by=action_object.updated_by,
-            trait_id=rtoData.objects.get(id=action_object.id),
-            trait_reference=action_object.trait_reference,
-            # Assuming you want to set the created_at and updated_at fields automatically
-        )
-        action_performed_obj.save()
+        saved_eval = save_evalutation(comment,expert_name,user,trait_id)
 
 
-
-
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True,"evaluation": "saved", 'action_performed':"saved",'msg': "Thank you for your feedback! Your evaluation has been saved successfully.",'evaluation': { 'id': saved_eval.id, 'evaluation': saved_eval.evaluation, 'expert_name': saved_eval.expert_name, 'created_at': saved_eval.created_at}})
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
@@ -167,7 +229,8 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)  # optional: sets session
-            return JsonResponse({"message": "Login successful"})
+            
+            return JsonResponse({"message": "Login successful",'user': { 'id': user.id, 'username': user.username, 'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name }})
         else:
             return JsonResponse({"error": "Invalid credentials"}, status=401)
     else:

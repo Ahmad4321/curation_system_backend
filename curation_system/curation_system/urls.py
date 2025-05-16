@@ -19,5 +19,5 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('rice_trait_ontology.urls'))
+    path('api/',include('rice_trait_ontology.urls'))
 ]
