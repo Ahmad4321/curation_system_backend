@@ -18,7 +18,7 @@ def get_data(request):
     all_data = rtoData.objects.all().values()
     data = []
     for line in all_data:
-        data.append({'id': int(line['id']), 'tag': line['TAG'], 'level': int(line['LEVEL']), 'name': f"{line['CNAME'] } ({line['ENAME']})",
+        data.append({'id': int(line['id']), 'tag': line['TAG'], 'level': int(line['LEVEL']), 'title': f"{line['CNAME'] } ({line['ENAME']})",'name': f"{line['CNAME'] } ({line['ENAME']})",
                     'ename': line['ENAME'], 'TOID': line['TOID'], 'parentId': int(line['PARENTID'])})
     tree = {}
     for item in data:
@@ -43,8 +43,8 @@ def get_data_json(request):
     data = []
 
     for line in rto_list:
-        data.append({'id': int(line['id']), 'tag': line['tag'], 'level': int(line['level']), 'name': f"{line['cname'] } ({line['ename']})",
-                    'ename': line['ename'], 'toid': line['toid'], 'parentId': int(line['parent_id']),
+        data.append({'id': int(line['id']), 'tag': line['tag'], 'level': int(line['level']), 'title': f"{line['cname'] } ({line['ename']})", 'name': f"{line['cname'] } ({line['ename']})",
+                    'ename': line['ename'], 'toid': line['toid'], 'parentId': int(line['parent_id']),'expanded' : False,
                     'pubAnnotation_evidence': line['pubAnnotation_evidence'],'llm_evidence': line['llm_evidence'],
                     'rice_alterome_evidence': line['rice_alterome_evidence'],'created_at': line['created_at'],'updated_at': line['updated_at'],
                     'created_by': line['created_by__username'],'updated_by': line['updated_by__username'],'created_by_id': line['created_by__id'],'updated_by_id': line['updated_by__id']})
