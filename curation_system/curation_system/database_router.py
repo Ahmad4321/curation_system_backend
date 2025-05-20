@@ -17,6 +17,7 @@ class DatabaseAppsRouter(object):
     DATABASE_APPS_MAPPING = {'app1': 'db1', 'app2': 'db2'}
     """
 
+    print(DATABASE_MAPPING)
     def db_for_read(self, model, **hints):
         """"Point all read operations to the specific database."""
         if model._meta.app_label in DATABASE_MAPPING:

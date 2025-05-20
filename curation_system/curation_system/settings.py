@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rice_trait_ontology',
+    'rice_trait_ontology.apps.RiceTraitOntologyConfig',
+    'RiceAlterome.apps.RicealteromeConfig', 
     'corsheaders',
 ]
 
@@ -85,14 +86,23 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'ricetrait.db.sqlite3',
+    },
+    'rice_trait_ontology': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'ricetrait.db.sqlite3',
+    },
+    'RiceAlteromeDB': {  # Database for RiceAlterome
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'RiceAlterome.db.sqlite3'
     }
 }
 
-# DATABASE_ROUTERS = ['curation_system.database_router.DatabaseAppsRouter']
+DATABASE_ROUTERS = ['curation_system.database_router.DatabaseAppsRouter']
 
-# DATABASE_APPS_MAPPING = {
-#     'rice_trait_ontology': 'trait_curation_system',
-# }
+DATABASE_APPS_MAPPING = {
+    'rice_trait_ontology': 'rice_trait_ontology',
+    'RiceAlterome': 'RiceAlteromeDB', # BLAH8: Rice Alterome
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

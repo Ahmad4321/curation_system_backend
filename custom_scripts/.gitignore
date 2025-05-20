@@ -1,0 +1,4 @@
+*.tsv
+*.sqlite3
+*.csv
+*.obo

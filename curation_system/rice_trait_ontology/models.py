@@ -31,6 +31,7 @@ class rtoData(models.Model):
 
     class Meta:
         db_table = 'rto_data'
+        app_label = 'rice_trait_ontology'
 
 class TraitEvaluation(models.Model):
     id = models.AutoField(primary_key=True)
@@ -49,6 +50,7 @@ class TraitEvaluation(models.Model):
 
     class Meta:
         db_table = 'trait_evaluation'
+        app_label = 'rice_trait_ontology'
         indexes = [
             models.Index(fields=['id', 'trait_id']),
         ]
@@ -94,3 +96,59 @@ class CustomUser(models.Model):
     pass
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+class TraitExplaination(models.Model):
+    id = models.AutoField(primary_key=True)
+    sentence = models.TextField(db_column="sentence",max_length=255,null=True, blank=True)
+    is_obsolete = models.TextField(db_column="is_obsolete",max_length=255,null=True, blank=True)
+    is_a = models.TextField(db_column="is_a",max_length=255,null=True, blank=True)
+    xref = models.TextField(db_column="xref",max_length=255,null=True, blank=True)
+    synonym = models.TextField(db_column="synonym",max_length=255,null=True, blank=True)
+    comment = models.TextField(db_column="comment",max_length=255,null=True, blank=True)
+    name = models.TextField(db_column="name",max_length=255,null=True, blank=True)
+    trait_ontology_id = models.TextField(db_column="trait_ontology_id",max_length=255,null=True, blank=True)
+
+    class Meta:
+        db_table = 'trait_explaination'
+        app_label = 'rice_trait_ontology'
+        indexes = [
+            models.Index(fields=['id']),
+        ]
+
+class RiceAlteromeModelExternal(models.Model):
+
+    # primary key
+    id = models.AutoField(db_column="id",primary_key=True)
+    Gene = models.CharField(db_column='Gene', max_length=100, db_index=True)
+    EntrezID = models.CharField(db_column='EntrezID', max_length=100, db_index=True)
+    NormalizedVariantsMention = models.CharField(db_column='NormalizedVariantsMention', max_length=100, db_index=True)
+    NormalizedVariantsID = models.CharField(db_column='NormalizedVariantsID', max_length=100, db_index=True)
+    NormalizedVariantsType = models.CharField(db_column='NormalizedVariantsType', max_length=100, db_index=True)
+    AlterationsMention = models.CharField(db_column='AlterationsMention', max_length=100, db_index=True)
+    AlterationsType = models.CharField(db_column='AlterationsType', max_length=100, db_index=True)
+    GOMention = models.CharField(db_column='GOMention', max_length=100, db_index=True)
+    GOTerm = models.CharField(db_column='GOTerm', max_length=100, db_index=True)
+    GOAncestor = models.CharField(db_column='GOAncestor', max_length=100, db_index=True)
+    TOMention = models.CharField(db_column='TOMention', max_length=100, db_index=True)
+    TOTerm = models.CharField(db_column='TOTerm', max_length=100, db_index=True)
+    TOAncestor = models.CharField(db_column='TOAncestor', max_length=100, db_index=True)
+    MeshMention = models.CharField(db_column='MeshMention', max_length=100, db_index=True)
+    MeshTerm = models.CharField(db_column='MeshTerm', max_length=100, db_index=True)
+    UnNormTerm = models.CharField(db_column='UnNormTerm', max_length=100, db_index=True)
+    IncludeEvents = models.CharField(db_column='IncludeEvents', max_length=10)
+    Events = models.CharField(db_column='Events', max_length=500)
+    PMID = models.CharField(db_column='PMID', max_length=15)
+    Title = models.CharField(db_column='Title', max_length=100)
+    Doi = models.CharField(db_column='Doi', max_length=10)
+    Sentence = models.CharField(db_column='Sentence', max_length=1000)
+    RichSentence = models.CharField(db_column='RichSentence', max_length=3000)
+    Journal = models.CharField(db_column='Journal', max_length=100)
+    Year = models.CharField(db_column='Year', max_length=10, db_index=True)
+
+    class Meta:
+        managed = False
+        db_table = 'RiceAlteromeModel'
+        app_label = 'RiceAlterome'
+
+    def __str__(self):
+        return f'{self.PMID}-{self.Year}-{self.Gene}'

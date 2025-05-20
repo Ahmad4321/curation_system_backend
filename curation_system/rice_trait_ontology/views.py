@@ -86,20 +86,25 @@ def getevaluation_data(request):
     if request.method == "POST":
         data = json.loads(request.body)
         trait_id = data.get("trait_id")
-        print("Trait ID:", trait_id)
+        trait_name = data.get("name") or ""
         all_data = TraitEvaluation.objects.filter(trait_id=trait_id).values('id','evaluation', 'expert_name', 'created_at', 'updated_at', 'created_by_id')
         data = []
         for line in all_data:
             data.append({'id': int(line['id']), 'evaluation': line['evaluation'], 'expert_name': line['expert_name'],
                         'created_at': line['created_at'], 'updated_at': line['updated_at']})
-        context = {'code': 0, 'message': 'hello', 'count': len(data), 'data': data}
+        
+        rice_trait_name = rtoData.objects.filter(id=trait_id).values('llm_evidence','pubAnnotation_evidence','rice_alterome_evidence')
+
+        rice_infromations = [item for item in rice_trait_name]
+        
+        Trait_information =  TraitExplaination.objects.filter(name__iexact= trait_name.lower()).values('comment','sentence','is_a','is_obsolete','name','synonym','trait_ontology_id','xref')
+        Trait_information = [item for item in Trait_information]
+        context = {'code': 0, 'message': 'hello', 'count': len(data), 'data': data, "Trait_information" : Trait_information,'trait':rice_infromations}
         return JsonResponse(context, safe=False)
 
     else:
         context = {'code': 0, 'message': 'hello', 'count': 0, 'data': []}
         return JsonResponse(context, safe=False)
-
-    
 
 @csrf_exempt
 def get_data_distinct(request):
@@ -243,4 +248,17 @@ def logout_view(request):
         logout(request)
         return JsonResponse({'message': 'Logged out successfully'})
     else:            
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+    
+@csrf_exempt
+def get_rice_alterome_data(request):
+    if request.method == 'GET':
+        data = RiceAlteromeModelExternal.objects.filter(
+            Q(GOTerm__icontains='Sensitivity') | 
+            Q(TOTerm__icontains='Sensitivity') | 
+            Q(Sentence__icontains='Sensitivity')
+            ).values('Gene','PMID','Title','Sentence','GOTerm','TOTerm','RichSentence')[:100]
+        data = list(data)
+        return JsonResponse(data, safe=False)
+    else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
