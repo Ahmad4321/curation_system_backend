@@ -3,9 +3,9 @@ import requests
 import csv
 
 
-conn = sqlite3.connect('../curation_system/ricetrait.db.sqlite3')
+conn = sqlite3.connect('./ricetrait.db.sqlite3')
 cursor = conn.cursor()
-conn2 = sqlite3.connect('../curation_system/RiceAlterome.db.sqlite3')
+conn2 = sqlite3.connect('./RiceAlterome.db.sqlite3')
 cursor2 = conn2.cursor()
 
 query = """
@@ -16,6 +16,7 @@ result = cursor.execute(query).fetchall()
 flat_results = [row[0] for row in result]
 rice_alterome_evidence = []
 PMID  = []
+count = 0
 for res  in flat_results:
     entry = {"trait_name": res}
     strv = ""
@@ -26,6 +27,9 @@ for res  in flat_results:
     for res1 in rice_flat_results:
         sub_entry.append({'Gene' : res1[0],'PMID' : res1[1],'Title' : res1[2],'Sentence' : res1[3],'GOTerm' : res1[4],'TOTerm' : res1[5],'RichSentence' : res1[6]})
         strv += ","+res1[1]
+        if count == 0:
+            print(res,sub_entry)
+            count += 1
     entry["trait_evidence"] = sub_entry
     entry["trait_evidence_length"] = len(sub_entry)
     entry["PMIDs"] = strv

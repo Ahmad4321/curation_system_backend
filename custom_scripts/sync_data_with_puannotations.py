@@ -28,7 +28,10 @@ with open('output_04_04.tsv', 'r', encoding='utf-8') as f:
                 entry["tracks"]= row["tracks"]
                 entry["project_name"] = "OryzaGP_2021_FLAIR,OryzaGP_2021,OryzaGP_2021_v2,OryzaGP"
             
-            # if entry:
+            if entry:
+                puabannotation_refernce.append(entry)
+                row["pubannotation"]
+        
                 
                 
 
