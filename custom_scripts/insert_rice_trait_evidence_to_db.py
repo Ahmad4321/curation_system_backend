@@ -8,7 +8,7 @@ cursor = conn.cursor()
 
 for _, row in df.iterrows():
     query = """
-    INSERT INTO rice_alterome_pubannotation (alterome_GoTerm, alterome_Gene, alterome_PMID, alterome_RichSentence, alterome_sentence, alterome_title, alterome_trait_name, alterome_TOTerm)
+    INSERT INTO RiceAlteromePubannotation (alterome_GoTerm, alterome_Gene, alterome_PMID, alterome_RichSentence, alterome_sentence, alterome_title, alterome_trait_name, alterome_TOTerm)
     VALUES(?, ?, ?, ?, ?, ?, ?, ?);
     """ 
     cursor.execute(query, (row["GOTerm"], row["Gene"], row["PMID"], row["RichSentence"], row["Sentence"], row["Title"], row["trait_name"], row["TOTerm"]))
