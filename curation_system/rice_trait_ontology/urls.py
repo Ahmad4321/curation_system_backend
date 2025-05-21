@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import index,login_view,get_data,get_data_json,get_data_distinct,save_actions,register_view,logout_view,getevaluation_data,get_rice_alterome_data
+from .views import index,login_view,get_data,get_data_json,get_data_distinct,save_actions,register_view,logout_view,getevaluation_data
 
     
 
@@ -14,5 +14,5 @@ urlpatterns = [
     path("get_data_json/", get_data_json, name="get_data_json"),
     path("curation_system_trait/",get_data_distinct,name="trait_list"),
     path("save_action_evaluation/",save_actions , name="save_actions"),
-    path("rc_data/",get_rice_alterome_data,name="get_rice_alterome_data")
+    # path("rc_data/",get_rice_alterome_data,name="get_rice_alterome_data")
 ]

@@ -86,7 +86,7 @@ print(BASE_DIR)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'trait_ontologies.db.sqlite3',
+        'NAME': BASE_DIR / 'ricetrait.db.sqlite3',
     },
     'TraitDb': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -99,12 +99,12 @@ DATABASES = {
     # }
 }
 
-DATABASE_ROUTERS = ['curation_system.database_router.DatabaseAppsRouter']
+# DATABASE_ROUTERS = ['curation_system.database_router.DatabaseAppsRouter']
 
-DATABASE_APPS_MAPPING = {
-    'rice_trait_ontology': 'TraitDb',
-    # 'RiceAlterome': 'RiceAlteromeDB', # BLAH8: Rice Alterome
-}
+# DATABASE_APPS_MAPPING = {
+#     'rice_trait_ontology': 'TraitDb',
+#     # 'RiceAlterome': 'RiceAlteromeDB', # BLAH8: Rice Alterome
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

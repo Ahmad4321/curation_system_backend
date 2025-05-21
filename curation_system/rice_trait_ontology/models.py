@@ -50,7 +50,7 @@ class TraitEvaluation(models.Model):
 
     class Meta:
         db_table = 'trait_evaluation'
-        app_label = 'rice_trait_ontology'
+        # app_label = 'rice_trait_ontology'
         indexes = [
             models.Index(fields=['id', 'trait_id']),
         ]
@@ -110,51 +110,52 @@ class TraitExplaination(models.Model):
 
     class Meta:
         db_table = 'trait_explaination'
-        app_label = 'rice_trait_ontology'
+        # app_label = 'rice_trait_ontology'
         indexes = [
             models.Index(fields=['id']),
         ]
 
-class RiceAlteromeModelExternal(models.Model):
+# class RiceAlteromeModelExternal(models.Model):
 
-    # primary key
-    id = models.AutoField(db_column="id",primary_key=True)
-    Gene = models.CharField(db_column='Gene', max_length=100, db_index=True)
-    EntrezID = models.CharField(db_column='EntrezID', max_length=100, db_index=True)
-    NormalizedVariantsMention = models.CharField(db_column='NormalizedVariantsMention', max_length=100, db_index=True)
-    NormalizedVariantsID = models.CharField(db_column='NormalizedVariantsID', max_length=100, db_index=True)
-    NormalizedVariantsType = models.CharField(db_column='NormalizedVariantsType', max_length=100, db_index=True)
-    AlterationsMention = models.CharField(db_column='AlterationsMention', max_length=100, db_index=True)
-    AlterationsType = models.CharField(db_column='AlterationsType', max_length=100, db_index=True)
-    GOMention = models.CharField(db_column='GOMention', max_length=100, db_index=True)
-    GOTerm = models.CharField(db_column='GOTerm', max_length=100, db_index=True)
-    GOAncestor = models.CharField(db_column='GOAncestor', max_length=100, db_index=True)
-    TOMention = models.CharField(db_column='TOMention', max_length=100, db_index=True)
-    TOTerm = models.CharField(db_column='TOTerm', max_length=100, db_index=True)
-    TOAncestor = models.CharField(db_column='TOAncestor', max_length=100, db_index=True)
-    MeshMention = models.CharField(db_column='MeshMention', max_length=100, db_index=True)
-    MeshTerm = models.CharField(db_column='MeshTerm', max_length=100, db_index=True)
-    UnNormTerm = models.CharField(db_column='UnNormTerm', max_length=100, db_index=True)
-    IncludeEvents = models.CharField(db_column='IncludeEvents', max_length=10)
-    Events = models.CharField(db_column='Events', max_length=500)
-    PMID = models.CharField(db_column='PMID', max_length=15)
-    Title = models.CharField(db_column='Title', max_length=100)
-    Doi = models.CharField(db_column='Doi', max_length=10)
-    Sentence = models.CharField(db_column='Sentence', max_length=1000)
-    RichSentence = models.CharField(db_column='RichSentence', max_length=3000)
-    Journal = models.CharField(db_column='Journal', max_length=100)
-    Year = models.CharField(db_column='Year', max_length=10, db_index=True)
+#     # primary key
+#     id = models.AutoField(db_column="id",primary_key=True)
+#     Gene = models.CharField(db_column='Gene', max_length=100, db_index=True)
+#     EntrezID = models.CharField(db_column='EntrezID', max_length=100, db_index=True)
+#     NormalizedVariantsMention = models.CharField(db_column='NormalizedVariantsMention', max_length=100, db_index=True)
+#     NormalizedVariantsID = models.CharField(db_column='NormalizedVariantsID', max_length=100, db_index=True)
+#     NormalizedVariantsType = models.CharField(db_column='NormalizedVariantsType', max_length=100, db_index=True)
+#     AlterationsMention = models.CharField(db_column='AlterationsMention', max_length=100, db_index=True)
+#     AlterationsType = models.CharField(db_column='AlterationsType', max_length=100, db_index=True)
+#     GOMention = models.CharField(db_column='GOMention', max_length=100, db_index=True)
+#     GOTerm = models.CharField(db_column='GOTerm', max_length=100, db_index=True)
+#     GOAncestor = models.CharField(db_column='GOAncestor', max_length=100, db_index=True)
+#     TOMention = models.CharField(db_column='TOMention', max_length=100, db_index=True)
+#     TOTerm = models.CharField(db_column='TOTerm', max_length=100, db_index=True)
+#     TOAncestor = models.CharField(db_column='TOAncestor', max_length=100, db_index=True)
+#     MeshMention = models.CharField(db_column='MeshMention', max_length=100, db_index=True)
+#     MeshTerm = models.CharField(db_column='MeshTerm', max_length=100, db_index=True)
+#     UnNormTerm = models.CharField(db_column='UnNormTerm', max_length=100, db_index=True)
+#     IncludeEvents = models.CharField(db_column='IncludeEvents', max_length=10)
+#     Events = models.CharField(db_column='Events', max_length=500)
+#     PMID = models.CharField(db_column='PMID', max_length=15)
+#     Title = models.CharField(db_column='Title', max_length=100)
+#     Doi = models.CharField(db_column='Doi', max_length=10)
+#     Sentence = models.CharField(db_column='Sentence', max_length=1000)
+#     RichSentence = models.CharField(db_column='RichSentence', max_length=3000)
+#     Journal = models.CharField(db_column='Journal', max_length=100)
+#     Year = models.CharField(db_column='Year', max_length=10, db_index=True)
 
-    class Meta:
-        managed = False
-        db_table = 'RiceAlteromeModel'
-        app_label = 'RiceAlterome'
+#     class Meta:
+#         managed = False
+#         db_table = 'RiceAlteromeModel'
+#         app_label = 'RiceAlterome'
 
-    def __str__(self):
-        return f'{self.PMID}-{self.Year}-{self.Gene}'
+#     def __str__(self):
+#         return f'{self.PMID}-{self.Year}-{self.Gene}'
     
 
-class RiceAlteromePubannotationData(models.Model):
+
+class RiceAlteromePubannotation(models.Model):
     id = models.AutoField(db_column="id",primary_key=True)
     alterome_GoTerm = models.CharField(db_column='alterome_GoTerm', max_length=100, db_index=True,null=True)
     alterome_Gene = models.CharField(db_column='alterome_Gene', max_length=100, db_index=True,null=True)
@@ -172,10 +173,8 @@ class RiceAlteromePubannotationData(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'rice_alterome_pubannotationData'
-        app_label = 'rice_trait_ontology'
+        db_table = 'riceAlteromePubannotation'
+        # app_label = 'rice_trait_ontology'
         indexes = [
             models.Index(fields=['id']),
         ]
-
-        

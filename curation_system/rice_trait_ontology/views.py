@@ -250,15 +250,15 @@ def logout_view(request):
     else:            
         return JsonResponse({'error': 'Invalid request method'}, status=400)
     
-@csrf_exempt
-def get_rice_alterome_data(request):
-    if request.method == 'GET':
-        data = RiceAlteromeModelExternal.objects.filter(
-            Q(GOTerm__icontains='Sensitivity') | 
-            Q(TOTerm__icontains='Sensitivity') | 
-            Q(Sentence__icontains='Sensitivity')
-            ).values('Gene','PMID','Title','Sentence','GOTerm','TOTerm','RichSentence')[:100]
-        data = list(data)
-        return JsonResponse(data, safe=False)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+# @csrf_exempt
+# def get_rice_alterome_data(request):
+#     if request.method == 'GET':
+#         data = RiceAlteromeModelExternal.objects.filter(
+#             Q(GOTerm__icontains='Sensitivity') | 
+#             Q(TOTerm__icontains='Sensitivity') | 
+#             Q(Sentence__icontains='Sensitivity')
+#             ).values('Gene','PMID','Title','Sentence','GOTerm','TOTerm','RichSentence')[:100]
+#         data = list(data)
+#         return JsonResponse(data, safe=False)
+#     else:
+#         return JsonResponse({'error': 'Invalid request method'}, status=400)
