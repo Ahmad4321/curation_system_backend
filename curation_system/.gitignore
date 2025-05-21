@@ -7,3 +7,4 @@ curation_system_frontend--
 *.egg-info
 RiceAlterome
 *.sqlite3
+ricetrait.db.sqlite3

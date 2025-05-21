@@ -92,14 +92,20 @@ def getevaluation_data(request):
         for line in all_data:
             data.append({'id': int(line['id']), 'evaluation': line['evaluation'], 'expert_name': line['expert_name'],
                         'created_at': line['created_at'], 'updated_at': line['updated_at']})
-        
-        rice_trait_name = rtoData.objects.filter(id=trait_id).values('llm_evidence','pubAnnotation_evidence','rice_alterome_evidence')
-
-        rice_infromations = [item for item in rice_trait_name]
+        rice_alterome_evidence = []
+        pubannotation_evidence = []
+        if trait_name!= "":
+            #  rice Trait fetch iformation
+            rice_trait_evidence = RiceAlteromePubannotation.objects.filter(alterome_trait_name=trait_name).values('id','alterome_PMID','alterome_RichSentence','alterome_sentence','alterome_title','pubannotation_target','pubannotation_source_db','pubannotation_project_name','alterome_Gene','pubannotation_text')
+            for row in rice_trait_evidence:
+                rice_alterome_evidence.append({'id':row['id'],'alterome_PMID': row['alterome_PMID'],'alterome_RichSentence': row['alterome_RichSentence'],'alterome_sentence': row['alterome_sentence'],'alterome_title': row['alterome_title'],'alterome_Gene': row['alterome_Gene'],})
+                if row['pubannotation_text']:
+                    pubannotation_evidence.append({'id':row['id'],'alterome_PMID': row['alterome_PMID'],'pubannotation_target': row['pubannotation_target'],'pubannotation_source_db': row['pubannotation_source_db'],'pubannotation_project_name': row['pubannotation_project_name'],'pubannotation_text': row['pubannotation_text']})
         
         Trait_information =  TraitExplaination.objects.filter(name__iexact= trait_name.lower()).values('comment','sentence','is_a','is_obsolete','name','synonym','trait_ontology_id','xref')
         Trait_information = [item for item in Trait_information]
-        context = {'code': 0, 'message': 'hello', 'count': len(data), 'data': data, "Trait_information" : Trait_information,'trait':rice_infromations}
+
+        context = {'code': 0, 'message': 'hello', 'count': len(data), 'data': data, "Trait_information" : Trait_information,'rice_alterome_evidence':rice_alterome_evidence,"pubannotation_evidence":pubannotation_evidence}
         return JsonResponse(context, safe=False)
 
     else:
