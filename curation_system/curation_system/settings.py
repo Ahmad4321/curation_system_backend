@@ -81,27 +81,29 @@ WSGI_APPLICATION = 'curation_system.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+print(BASE_DIR)
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'ricetrait.db.sqlite3',
+        'NAME': BASE_DIR / 'trait_ontologies.db.sqlite3',
     },
-    'rice_trait_ontology': {
+    'TraitDb': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'ricetrait.db.sqlite3',
-    },
-    'RiceAlteromeDB': {  # Database for RiceAlterome
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'RiceAlterome.db.sqlite3'
     }
+    # ,
+    # 'RiceAlteromeDB': {  # Database for RiceAlterome
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'RiceAlterome.db.sqlite3'
+    # }
 }
 
 DATABASE_ROUTERS = ['curation_system.database_router.DatabaseAppsRouter']
 
 DATABASE_APPS_MAPPING = {
-    'rice_trait_ontology': 'rice_trait_ontology',
-    'RiceAlterome': 'RiceAlteromeDB', # BLAH8: Rice Alterome
+    'rice_trait_ontology': 'TraitDb',
+    # 'RiceAlterome': 'RiceAlteromeDB', # BLAH8: Rice Alterome
 }
 
 # Password validation

@@ -152,3 +152,30 @@ class RiceAlteromeModelExternal(models.Model):
 
     def __str__(self):
         return f'{self.PMID}-{self.Year}-{self.Gene}'
+    
+
+class RiceAlteromePubannotationData(models.Model):
+    id = models.AutoField(db_column="id",primary_key=True)
+    alterome_GoTerm = models.CharField(db_column='alterome_GoTerm', max_length=100, db_index=True,null=True)
+    alterome_Gene = models.CharField(db_column='alterome_Gene', max_length=100, db_index=True,null=True)
+    alterome_PMID = models.CharField(db_column='alterome_PMID', max_length=15,null=True)
+    alterome_RichSentence = models.CharField(db_column='alterome_RichSentence', max_length=3000,null=True)
+    alterome_sentence = models.CharField(db_column='alterome_sentence', max_length=1000,null=True)
+    alterome_title = models.CharField(db_column='alterome_title', max_length=100,null=True)
+    alterome_trait_name = models.CharField(db_column='alterome_trait_name', max_length=100, db_index=True,null=True)
+    alterome_TOTerm = models.CharField(db_column='alterome_TOTerm', max_length=100, db_index=True,null=True)
+    pubannotation_target = models.TextField(db_column="pubannotation_target",null=True)
+    pubannotation_text = models.TextField(db_column="pubannotation_text",null=True)
+    pubannotation_source_db = models.TextField(db_column="pubannotation_source_db",null=True)
+    pubannotation_project_name = models.TextField(db_column="pubannotation_project_name",null=True)
+    pubannotation_tracks = models.TextField(db_column="pubannotation_tracks",null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'rice_alterome_pubannotationData'
+        app_label = 'rice_trait_ontology'
+        indexes = [
+            models.Index(fields=['id']),
+        ]
+
+        
